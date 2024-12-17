@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatabaseinfoX</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: left;
+        }
+        .input-container {
+            margin-bottom: 15px;
+        }
+        .input-container label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .input-container input, 
+        .input-container textarea {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid white;
+            background: black;
+            color: white;
+            outline: none;
+        }
+        .input-container input[type="file"] {
+            border: none;
+        }
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background-color: black;
+            color: white;
+            border: 1px solid white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: white;
+            color: black;
+        }
+        canvas {
+            display: none;
+        }
+        #preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #preview img {
+            max-width: 100%;
+            border: 1px solid white;
+        }
+    </style>
+</head>
+<body>
+    <h1>DatabaseinfoX</h1>
+    <div class="form-container">
+        <!-- Inputs -->
+        <div class="input-container"><label for="name">Name:</label><input type="text" id="name" placeholder="Enter name"></div>
+        <div class="input-container"><label for="gender">Gender:</label><input type="text" id="gender" placeholder="Enter gender"></div>
+        <div class="input-container"><label for="age">Age:</label><input type="number" id="age" placeholder="Enter age"></div>
+        <div class="input-container"><label for="phone">Phone Number:</label><input type="tel" id="phone" placeholder="Enter phone number"></div>
+        <div class="input-container"><label for="dob">Date of Birth:</label><input type="date" id="dob"></div>
+        <div class="input-container"><label for="financialStatus">Financial Status:</label><textarea id="financialStatus" rows="2" placeholder="Enter financial status"></textarea></div>
+        <div class="input-container"><label for="talents">Talents:</label><textarea id="talents" rows="2" placeholder="Enter talents"></textarea></div>
+        <div class="input-container"><label for="skills">Skills:</label><textarea id="skills" rows="2" placeholder="Enter skills"></textarea></div>
+        <div class="input-container"><label for="likes">Likes:</label><textarea id="likes" rows="2" placeholder="Enter likes"></textarea></div>
+        <div class="input-container"><label for="dislikes">Dislikes:</label><textarea id="dislikes" rows="2" placeholder="Enter dislikes"></textarea></div>
+        <div class="input-container"><label for="closeFriends">Close Friends:</label><textarea id="closeFriends" rows="2" placeholder="Enter close friends"></textarea></div>
+        <div class="input-container"><label for="strength">Strength:</label><textarea id="strength" rows="2" placeholder="Enter strength"></textarea></div>
+        <div class="input-container"><label for="weakness">Weakness:</label><textarea id="weakness" rows="2" placeholder="Enter weakness"></textarea></div>
+        <div class="input-container"><label for="threats">Threats:</label><textarea id="threats" rows="2" placeholder="Enter threats"></textarea></div>
+        <div class="input-container"><label for="personality">Personality:</label><textarea id="personality" rows="2" placeholder="Enter personality"></textarea></div>
+        <div class="input-container"><label for="parents">Parents/Siblings:</label><textarea id="parents" rows="2" placeholder="Enter parents/siblings"></textarea></div>
+        <div class="input-container"><label for="address">Address:</label><textarea id="address" rows="2" placeholder="Enter address"></textarea></div>
+        <div class="input-container"><label for="work">Work At:</label><textarea id="work" rows="2" placeholder="Enter work"></textarea></div>
+        <div class="input-container"><label for="backgroundLogo">Upload Background Logo:</label><input type="file" id="backgroundLogo" accept="image/*"></div>
+        <div class="input-container"><label for="personImage">Upload Person Image:</label><input type="file" id="personImage" accept="image/*"></div>
+        <button onclick="generateTemplate()">Generate Template</button>
+        <button onclick="downloadTemplate()">Download Template</button>
+    </div>
+    <canvas id="templateCanvas" width="800" height="1200"></canvas>
+    <div id="preview"><p>Preview:</p><img id="templatePreview" alt="Template Preview"></div>
+
+    <script>
+        let backgroundLogo = null;
+        let personImage = null;
+
+        document.getElementById('backgroundLogo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onload = () => backgroundLogo = img;
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('personImage').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onload = () => personImage = img;
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function generateTemplate() {
+            const canvas = document.getElementById('templateCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Background color
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Centered background logo
+            if (backgroundLogo) {
+                const bgWidth = canvas.width / 2;
+                const bgHeight = (backgroundLogo.height / backgroundLogo.width) * bgWidth;
+                const bgX = (canvas.width - bgWidth) / 2;
+                const bgY = (canvas.height - bgHeight) / 2;
+                ctx.globalAlpha = 0.3;
+                ctx.drawImage(backgroundLogo, bgX, bgY, bgWidth, bgHeight);
+                ctx.globalAlpha = 1;
+            }
+
+            // Enlarged person image (right side)
+            if (personImage) {
+                const imgWidth = canvas.width / 3;
+                const imgHeight = (personImage.height / personImage.width) * imgWidth;
+                const imgX = canvas.width - imgWidth - 20;
+                const imgY = 20;
+                ctx.drawImage(personImage, imgX, imgY, imgWidth, imgHeight);
+            }
+
+            // Inputs data
+            ctx.fillStyle = 'white';
+            ctx.font = '18px Arial';
+            const inputs = {
+                Name: document.getElementById('name').value || "N/A",
+                Gender: document.getElementById('gender').value || "N/A",
+                Age: document.getElementById('age').value || "N/A",
+                Phone: document.getElementById('phone').value || "N/A",
+                DOB: document.getElementById('dob').value || "N/A",
+                FinancialStatus: document.getElementById('financialStatus').value || "N/A",
+                Talents: document.getElementById('talents').value || "N/A",
+                Skills: document.getElementById('skills').value || "N/A",
+                Likes: document.getElementById('likes').value || "N/A",
+                Dislikes: document.getElementById('dislikes').value || "N/A",
+                CloseFriends: document.getElementById('closeFriends').value || "N/A",
+                Strength: document.getElementById('strength').value || "N/A",
+                Weakness: document.getElementById('weakness').value || "N/A",
+                Threats: document.getElementById('threats').value || "N/A",
+                Personality: document.getElementById('personality').value || "N/A",
+                Parents: document.getElementById('parents').value || "N/A",
+                Address: document.getElementById('address').value || "N/A",
+                Work: document.getElementById('work').value || "N/A",
+            };
+
+            let y = 200;
+            for (const key in inputs) {
+                ctx.fillText(`${key}: ${inputs[key]}`, 20, y);
+                y += 30;
+            }
+
+            // Preview
+            document.getElementById('templatePreview').src = canvas.toDataURL();
+        }
+
+        function downloadTemplate() {
+            const canvas = document.getElementById('templateCanvas');
+            const link = document.createElement('a');
+            link.download = 'template.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+</html>
